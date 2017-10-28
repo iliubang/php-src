@@ -8930,3 +8930,18 @@ ZEND_VM_HELPER(zend_interrupt_helper, ANY, ANY)
 	}
 	ZEND_VM_CONTINUE();
 }
+
+/* costum syntax 'in'*/
+ZEND_VM_HANDLER(198, ZEND_IN, CONST|TMPVAR|CV, CONST|TMPVAR|CV)
+{
+	USE_OPLINE
+	zend_free_op free_op1, free_op2;
+	zval *op1, *op2, *result;
+    SAVE_OPLINE();
+	op1 = GET_OP1_ZVAL_PTR_UNDEF(BP_VAR_R);
+	op2 = GET_OP2_ZVAL_PTR_UNDEF(BP_VAR_R);
+	in_function(EX_VAR(opline->result.var), op1, op2);
+    FREE_OP1();
+    FREE_OP2();
+	ZEND_VM_NEXT_OPCODE_CHECK_EXCEPTION();
+}

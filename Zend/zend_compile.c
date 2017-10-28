@@ -8654,6 +8654,7 @@ void zend_eval_const_expr(zend_ast **ast_ptr) /* {{{ */
 }
 /* }}} */
 
+
 /*
  * Local variables:
  * tab-width: 4

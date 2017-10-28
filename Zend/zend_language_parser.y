@@ -70,7 +70,7 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
 %left '^'
 %left '&'
 %nonassoc T_IS_EQUAL T_IS_NOT_EQUAL T_IS_IDENTICAL T_IS_NOT_IDENTICAL T_SPACESHIP
-%nonassoc '<' T_IS_SMALLER_OR_EQUAL '>' T_IS_GREATER_OR_EQUAL
+%nonassoc '<' T_IS_SMALLER_OR_EQUAL '>' T_IS_GREATER_OR_EQUAL 'in' T_IN /*custom syntax*/
 %left T_SL T_SR
 %left '+' '-' '.'
 %left '*' '/' '%'
@@ -221,6 +221,8 @@ static YYSIZE_T zend_yytnamerr(char*, const char*);
 %token T_COALESCE        "?? (T_COALESCE)"
 %token T_POW             "** (T_POW)"
 %token T_POW_EQUAL       "**= (T_POW_EQUAL)"
+/* custom syntax*/
+%token T_IN              "in (T_IN)"
 
 /* Token used to force a parse error from the lexer */
 %token T_ERROR
@@ -961,6 +963,8 @@ expr_without_variable:
 			{ $$ = zend_ast_create(ZEND_AST_CONDITIONAL, $1, NULL, $4); }
 	|	expr T_COALESCE expr
 			{ $$ = zend_ast_create(ZEND_AST_COALESCE, $1, $3); }
+    |   expr T_IN expr 
+            { $$ = zend_ast_create_binary_op(ZEND_IN, $1, $3); }
 	|	internal_functions_in_yacc { $$ = $1; }
 	|	T_INT_CAST expr		{ $$ = zend_ast_create_cast(IS_LONG, $2); }
 	|	T_DOUBLE_CAST expr	{ $$ = zend_ast_create_cast(IS_DOUBLE, $2); }

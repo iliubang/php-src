@@ -957,6 +957,53 @@ ZEND_API int ZEND_FASTCALL add_function(zval *result, zval *op1, zval *op2) /* {
 }
 /* }}} */
 
+ZEND_API int ZEND_FASTCALL in_function(zval *result, zval *op1, zval *op2)
+{
+    if (IS_STRING == Z_TYPE_P(op2)) {
+        zval op1_copy;
+        int use_copy;
+        use_copy = zend_make_printable_zval(op1, &op1_copy);
+        if (use_copy) {
+            op1 = &op1_copy;
+        }
+        if (0 == Z_STRLEN_P(op1)) {
+            ZVAL_TRUE(result);
+        } else {
+            const char *found = zend_memnstr(
+                    Z_STRVAL_P(op2),
+                    Z_STRVAL_P(op1),
+                    Z_STRLEN_P(op1),
+                    Z_STRVAL_P(op2) + Z_STRLEN_P(op2)
+                    ); 
+
+            ZVAL_BOOL(result, found != NULL);
+        }
+
+        if (use_copy) {
+            zval_dtor(&op1_copy);
+        }
+    } else if (IS_ARRAY == Z_TYPE_P(op2)) {
+        HashPosition pos;
+        zval *value;
+
+        ZVAL_FALSE(result);
+        zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(op2), &pos);
+        while ((value = zend_hash_get_current_data_ex(Z_ARRVAL_P(op2), &pos)) != NULL) {
+            zval res;
+            if (is_equal_function(&res, op1, value) == SUCCESS && Z_LVAL(res)) {
+                ZVAL_TRUE(result);
+                break;
+            }
+            zend_hash_move_forward_ex(Z_ARRVAL_P(op2), &pos);
+        }
+    } else {
+		zend_throw_error(NULL, "Unsupported operand types");
+		return FAILURE; /* unknown datatype */
+    }
+    
+    return SUCCESS;
+}
+
 ZEND_API int ZEND_FASTCALL sub_function(zval *result, zval *op1, zval *op2) /* {{{ */
 {
 	zval op1_copy, op2_copy;

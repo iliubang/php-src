@@ -1122,6 +1122,11 @@ NEWLINE ("\r"|"\n"|"\r\n")
 /* compute yyleng before each rule */
 <!*> := yyleng = YYCURSOR - SCNG(yy_text);
 
+/* custom syntax */
+<ST_IN_SCRIPTING> "in" {
+    return T_IN;
+}
+
 <ST_IN_SCRIPTING>"exit" {
 	RETURN_TOKEN(T_EXIT);
 }
