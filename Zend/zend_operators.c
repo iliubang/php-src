@@ -990,7 +990,7 @@ ZEND_API int ZEND_FASTCALL in_function(zval *result, zval *op1, zval *op2)
         zend_hash_internal_pointer_reset_ex(Z_ARRVAL_P(op2), &pos);
         while ((value = zend_hash_get_current_data_ex(Z_ARRVAL_P(op2), &pos)) != NULL) {
             zval res;
-            if (is_equal_function(&res, op1, value) == SUCCESS && Z_LVAL(res)) {
+            if (is_equal_function(&res, op1, value) == SUCCESS && 0 == Z_LVAL(res)) {
                 ZVAL_TRUE(result);
                 break;
             }
